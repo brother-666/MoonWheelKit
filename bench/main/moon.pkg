@@ -1,0 +1,7 @@
+import {
+  "brother-666/moonwheelkit" @wheel,
+}
+
+options(
+  "is-main": true,
+)
