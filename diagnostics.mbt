@@ -159,7 +159,7 @@ fn state_name(value : TimerState) -> String {
 
 ///|
 pub fn TimerInfo::to_json(self : TimerInfo) -> String {
-  "{\"id\":\{self.id},\"deadline\":\{self.deadline},\"period\":\{self.period},\"repeat\":\"\{repeat_name(self.repeat)}\",\"payload\":\"\{json_escape(self.payload)}\",\"state\":\"\{state_name(self.state)}\",\"generation\":\{self.generation}}"
+  "{\"id\":\{self.id},\"deadline\":\{self.deadline},\"period\":\{self.period},\"repeat\":\"\{repeat_name(self.repeat)}\",\"payload\":\"\{json_escape(self.payload)}\",\"state\":\"\{state_name(self.state)}\",\"generation\":\{self.generation},\"occurrence\":\{self.occurrence}}"
 }
 
 ///|

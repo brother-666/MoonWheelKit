@@ -101,6 +101,7 @@ pub(all) struct TimerInfo {
   state : TimerState
   sequence : Int
   generation : Int
+  occurrence : Int
 } derive(Debug, Eq)
 
 ///|

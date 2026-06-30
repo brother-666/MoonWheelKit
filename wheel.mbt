@@ -153,6 +153,7 @@ fn InternalTimer::info(self : InternalTimer) -> TimerInfo {
     state: self.state,
     sequence: self.sequence,
     generation: self.generation,
+    occurrence: self.occurrence,
   }
 }
 
