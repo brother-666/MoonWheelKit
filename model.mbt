@@ -145,3 +145,17 @@ pub(all) struct TimerSnapshot {
   config : WheelConfig
   timers : Array[TimerInfo]
 } derive(Debug, Eq)
+
+///|
+pub(all) struct ValidationIssue {
+  code : String
+  timer_id : Int
+  message : String
+} derive(Debug, Eq)
+
+///|
+pub(all) struct MaintenanceReport {
+  removed_terminal_timers : Int
+  removed_stale_entries : Int
+  retained_pending_timers : Int
+} derive(Debug, Eq)
