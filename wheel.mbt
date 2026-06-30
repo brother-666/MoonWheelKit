@@ -363,3 +363,56 @@ pub fn Wheel::advance_by(self : Wheel, delta : Int) -> AdvanceResult {
     self.advance_to(self.current_tick + delta)
   }
 }
+
+///|
+fn Wheel::rebuild_live_buckets(self : Wheel) -> Unit {
+  for bucket in self.buckets {
+    bucket.clear()
+  }
+  for _, timer in self.timers {
+    if timer.state == TimerState::Pending {
+      self.place(timer)
+    }
+  }
+}
+
+///|
+pub fn Wheel::advance_late_to(self : Wheel, target : Int) -> AdvanceResult {
+  if target < self.current_tick {
+    return AdvanceResult::Rejected(ScheduleError::TimeWentBackwards)
+  }
+  let from_tick = self.current_tick
+  self.current_tick = target
+  let output : Array[FiredTask] = []
+  for _, timer in self.timers {
+    if timer.state != TimerState::Pending || timer.deadline > target {
+      continue
+    }
+    match timer.repeat {
+      RepeatMode::Once | RepeatMode::FixedDelay =>
+        self.emit_timer(timer, output)
+      RepeatMode::FixedRate => {
+        let mut caught_up = 0
+        while timer.deadline <= target &&
+          caught_up < self.config.max_catch_up {
+          self.emit_timer(timer, output)
+          caught_up = caught_up + 1
+        }
+        if timer.deadline <= target {
+          let missed = (target - timer.deadline) / timer.period + 1
+          timer.deadline = timer.deadline + missed * timer.period
+          timer.generation = timer.generation + 1
+        }
+      }
+    }
+  }
+  self.rebuild_live_buckets()
+  sort_fired(output)
+  AdvanceResult::Advanced({
+    from_tick,
+    to_tick: target,
+    scanned_ticks: 0,
+    cascades: 0,
+    fired: output,
+  })
+}

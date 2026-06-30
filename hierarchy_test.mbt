@@ -130,3 +130,46 @@ test "stats distinguish pending cancelled and fired" {
   assert_eq(stats.scheduled_total, 3)
   assert_eq(wheel.validate().length(), 0)
 }
+
+///|
+test "late advance reports one shot lateness without scanning ticks" {
+  let wheel = @moonwheelkit.Wheel::new()
+  ignore(wheel.schedule(@moonwheelkit.TimerSpec::once(3, "deadline")))
+  let report = hierarchy_report(wheel.advance_late_to(10))
+  assert_eq(report.scanned_ticks, 0)
+  assert_eq(report.fired.length(), 1)
+  assert_eq(report.fired[0].scheduled_at, 3)
+  assert_eq(report.fired[0].observed_at, 10)
+  assert_eq(report.fired[0].lateness, 7)
+}
+
+///|
+test "late fixed delay emits once and delays from observation" {
+  let wheel = @moonwheelkit.Wheel::new()
+  ignore(
+    wheel.schedule(@moonwheelkit.TimerSpec::fixed_delay(2, 3, "worker")),
+  )
+  let fired = hierarchy_report(wheel.advance_late_to(10)).fired
+  assert_eq(fired.length(), 1)
+  assert_eq(wheel.timers()[0].deadline, 13)
+}
+
+///|
+test "late fixed rate catch up is bounded" {
+  let wheel = @moonwheelkit.Wheel::new(config=@moonwheelkit.WheelConfig::{
+    tick_ms: 1,
+    slots_per_level: 8,
+    levels: 3,
+    max_catch_up: 3,
+  })
+  ignore(
+    wheel.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "ticker")),
+  )
+  let fired = hierarchy_report(wheel.advance_late_to(20)).fired
+  assert_eq(fired.length(), 3)
+  assert_eq(fired[0].scheduled_at, 1)
+  assert_eq(fired[1].scheduled_at, 3)
+  assert_eq(fired[2].scheduled_at, 5)
+  assert_true(wheel.timers()[0].deadline > 20)
+  assert_eq(wheel.validate().length(), 0)
+}
