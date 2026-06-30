@@ -8,5 +8,5 @@
 - [x] 两页 PDF 与 DOCX 已生成
 - [ ] 填写参赛者姓名、电话、邮箱
 - [ ] 创建 GitLink 仓库并填写地址
-- [ ] 推送后确认 GitHub Actions 首次运行成功
+- [x] GitHub Actions 首次运行成功：run 28453414903
 - [ ] GitLink 手动同步并核对有效提交数
