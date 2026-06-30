@@ -23,6 +23,18 @@ pub(all) enum ScheduleError {
 } derive(Debug, Eq)
 
 ///|
+pub(all) enum TimerResult {
+  Accepted(Int)
+  Rejected(ScheduleError)
+} derive(Debug, Eq)
+
+///|
+pub(all) enum AdvanceResult {
+  Advanced(AdvanceReport)
+  Rejected(ScheduleError)
+} derive(Debug, Eq)
+
+///|
 pub(all) struct WheelConfig {
   tick_ms : Int
   slots_per_level : Int
