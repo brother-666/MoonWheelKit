@@ -77,6 +77,7 @@ moon run bench/main
 - [实现证据](docs/EVIDENCE.md)
 - [基准方案](docs/BENCHMARK_PLAN.md)
 - [公开协作跟踪](docs/TRACKING.md)
+- [外部时钟接入示例](examples/clock_adapter.md)
 - [路线图](ROADMAP.md)
 
 ## 项目边界
