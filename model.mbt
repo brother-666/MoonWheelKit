@@ -44,12 +44,7 @@ pub(all) struct WheelConfig {
 
 ///|
 pub fn WheelConfig::standard() -> WheelConfig {
-  {
-    tick_ms: 1,
-    slots_per_level: 64,
-    levels: 4,
-    max_catch_up: 32,
-  }
+  { tick_ms: 1, slots_per_level: 64, levels: 4, max_catch_up: 32 }
 }
 
 ///|

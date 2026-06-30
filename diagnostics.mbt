@@ -46,8 +46,7 @@ fn Wheel::live_entry_count(self : Wheel, timer : InternalTimer) -> Int {
   let mut count = 0
   for bucket in self.buckets {
     for entry in bucket {
-      if entry.timer_id == timer.id &&
-        entry.generation == timer.generation {
+      if entry.timer_id == timer.id && entry.generation == timer.generation {
         count = count + 1
       }
     }

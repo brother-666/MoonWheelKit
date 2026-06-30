@@ -11,8 +11,7 @@ fn print_advance(label : String, result : @wheel.AdvanceResult) -> Unit {
   match result {
     @wheel.AdvanceResult::Advanced(report) =>
       println(label + "=" + report.to_json())
-    @wheel.AdvanceResult::Rejected(_) =>
-      println(label + "_error=rejected")
+    @wheel.AdvanceResult::Rejected(_) => println(label + "_error=rejected")
   }
 }
 
@@ -29,9 +28,7 @@ fn main {
     scheduler.schedule(@wheel.TimerSpec::once(12, "session-expiry")),
   )
   ignore(
-    scheduler.schedule(
-      @wheel.TimerSpec::fixed_rate(2, 5, "metrics-heartbeat"),
-    ),
+    scheduler.schedule(@wheel.TimerSpec::fixed_rate(2, 5, "metrics-heartbeat")),
   )
   let retry = accepted_id(
     scheduler.schedule(@wheel.TimerSpec::once(20, "retry-deadline")),

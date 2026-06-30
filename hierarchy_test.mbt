@@ -12,13 +12,8 @@ fn hierarchy_report(
 ) -> @moonwheelkit.AdvanceReport {
   match result {
     @moonwheelkit.AdvanceResult::Advanced(report) => report
-    @moonwheelkit.AdvanceResult::Rejected(_) => {
-      from_tick: -1,
-      to_tick: -1,
-      scanned_ticks: -1,
-      cascades: -1,
-      fired: [],
-    }
+    @moonwheelkit.AdvanceResult::Rejected(_) =>
+      { from_tick: -1, to_tick: -1, scanned_ticks: -1, cascades: -1, fired: [] }
   }
 }
 
@@ -73,9 +68,7 @@ test "fixed delay timer schedules from observation time" {
 ///|
 test "fixed rate timer preserves cadence" {
   let wheel = @moonwheelkit.Wheel::new()
-  ignore(
-    wheel.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "heartbeat")),
-  )
+  ignore(wheel.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "heartbeat")))
   let report = hierarchy_report(wheel.advance_to(7))
   assert_eq(report.fired.length(), 4)
   assert_eq(report.fired[0].scheduled_at, 1)
@@ -146,9 +139,7 @@ test "late advance reports one shot lateness without scanning ticks" {
 ///|
 test "late fixed delay emits once and delays from observation" {
   let wheel = @moonwheelkit.Wheel::new()
-  ignore(
-    wheel.schedule(@moonwheelkit.TimerSpec::fixed_delay(2, 3, "worker")),
-  )
+  ignore(wheel.schedule(@moonwheelkit.TimerSpec::fixed_delay(2, 3, "worker")))
   let fired = hierarchy_report(wheel.advance_late_to(10)).fired
   assert_eq(fired.length(), 1)
   assert_eq(wheel.timers()[0].deadline, 13)
@@ -162,9 +153,7 @@ test "late fixed rate catch up is bounded" {
     levels: 3,
     max_catch_up: 3,
   })
-  ignore(
-    wheel.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "ticker")),
-  )
+  ignore(wheel.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "ticker")))
   let fired = hierarchy_report(wheel.advance_late_to(20)).fired
   assert_eq(fired.length(), 3)
   assert_eq(fired[0].scheduled_at, 1)

@@ -5,11 +5,9 @@ fn main {
   let horizon = 4096
   let mut index = 0
   while index < timer_count {
-    let deadline = (index * 37) % horizon + 1
+    let deadline = index * 37 % horizon + 1
     ignore(
-      scheduler.schedule(
-        @wheel.TimerSpec::once(deadline, "benchmark-payload"),
-      ),
+      scheduler.schedule(@wheel.TimerSpec::once(deadline, "benchmark-payload")),
     )
     index = index + 1
   }

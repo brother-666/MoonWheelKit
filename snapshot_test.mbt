@@ -4,13 +4,8 @@ fn snapshot_report(
 ) -> @moonwheelkit.AdvanceReport {
   match result {
     @moonwheelkit.AdvanceResult::Advanced(report) => report
-    @moonwheelkit.AdvanceResult::Rejected(_) => {
-      from_tick: -1,
-      to_tick: -1,
-      scanned_ticks: -1,
-      cascades: -1,
-      fired: [],
-    }
+    @moonwheelkit.AdvanceResult::Rejected(_) =>
+      { from_tick: -1, to_tick: -1, scanned_ticks: -1, cascades: -1, fired: [] }
   }
 }
 
@@ -33,9 +28,7 @@ test "snapshot restore preserves future firing order" {
 ///|
 test "snapshot restore preserves periodic occurrence counter" {
   let original = @moonwheelkit.Wheel::new()
-  ignore(
-    original.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "pulse")),
-  )
+  ignore(original.schedule(@moonwheelkit.TimerSpec::fixed_rate(1, 2, "pulse")))
   ignore(original.advance_to(3))
   let restored = match @moonwheelkit.Wheel::restore(original.snapshot()) {
     Some(wheel) => wheel

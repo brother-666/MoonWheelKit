@@ -7,7 +7,8 @@ The core library does not read the system clock. Applications explicitly
 advance virtual time, which makes timer-heavy services, simulations and tests
 repeatable across native, JavaScript, WebAssembly and Wasm-GC backends.
 
-```moonbit
+```moonbit nocheck
+///|
 test "schedule with deterministic virtual time" {
   let wheel = @moonwheelkit.Wheel::new()
   ignore(wheel.schedule(@moonwheelkit.TimerSpec::once(3, "expire")))

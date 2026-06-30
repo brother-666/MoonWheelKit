@@ -73,7 +73,7 @@ fn Wheel::select_level(self : Wheel, deadline : Int) -> Int {
 fn Wheel::place(self : Wheel, timer : InternalTimer) -> Unit {
   let level = self.select_level(timer.deadline)
   let span = self.level_span(level)
-  let slot = (timer.deadline / span) % self.config.slots_per_level
+  let slot = timer.deadline / span % self.config.slots_per_level
   self.buckets[self.flat_index(level, slot)].push({
     timer_id: timer.id,
     generation: timer.generation,
@@ -294,7 +294,7 @@ fn Wheel::cascade_level(self : Wheel, level : Int) -> Bool {
   if self.current_tick % span != 0 {
     return false
   }
-  let slot = (self.current_tick / span) % self.config.slots_per_level
+  let slot = self.current_tick / span % self.config.slots_per_level
   let bucket = self.buckets[self.flat_index(level, slot)]
   let entries = bucket.copy()
   bucket.clear()
@@ -313,10 +313,7 @@ fn Wheel::cascade_level(self : Wheel, level : Int) -> Bool {
 }
 
 ///|
-fn Wheel::process_current_tick(
-  self : Wheel,
-  output : Array[FiredTask],
-) -> Int {
+fn Wheel::process_current_tick(self : Wheel, output : Array[FiredTask]) -> Int {
   let mut cascades = 0
   let mut level = self.config.levels - 1
   while level >= 1 {
@@ -393,8 +390,7 @@ pub fn Wheel::advance_late_to(self : Wheel, target : Int) -> AdvanceResult {
         self.emit_timer(timer, output)
       RepeatMode::FixedRate => {
         let mut caught_up = 0
-        while timer.deadline <= target &&
-          caught_up < self.config.max_catch_up {
+        while timer.deadline <= target && caught_up < self.config.max_catch_up {
           self.emit_timer(timer, output)
           caught_up = caught_up + 1
         }
