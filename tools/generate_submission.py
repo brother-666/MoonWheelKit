@@ -45,10 +45,10 @@ LIGHT = colors.HexColor("#EDF4F7")
 
 BASIC = [
     ("项目名称", TITLE),
-    ("参赛者", "【提交前填写】"),
+    ("参赛者", "孙加豪"),
     ("联系方式", "【提交前填写：手机、邮箱】"),
     ("GitHub 仓库", REPO),
-    ("GitLink 仓库", "【创建后填写】"),
+    ("GitLink 仓库", "https://www.gitlink.org.cn/brother666/MoonWheelKit"),
     ("项目方向", "MoonBit 基础生态库 / 定时调度 / 确定性测试基础设施"),
     ("是否为移植项目", "否"),
     ("当前基础", "15+ 次有效提交；21 项测试；四后端验证；GitHub CI 已通过"),
@@ -432,8 +432,8 @@ def build_text_files():
                 "- [x] 默认、JS、Wasm、Wasm-GC 本地测试通过",
                 "- [x] CLI、万级工作负载、CI、查重和路线图齐备",
                 "- [x] 两页 PDF 与 DOCX 已生成",
-                "- [ ] 填写参赛者姓名、电话、邮箱",
-                "- [ ] 创建 GitLink 仓库并填写地址",
+                "- [ ] 填写参赛者电话、邮箱",
+                "- [x] GitLink 仓库：https://www.gitlink.org.cn/brother666/MoonWheelKit",
                 "- [x] GitHub Actions 首次运行成功：run 28453414903",
                 "- [ ] GitLink 手动同步并核对有效提交数",
             ]

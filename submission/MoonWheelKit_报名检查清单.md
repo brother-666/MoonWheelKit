@@ -6,7 +6,7 @@
 - [x] 默认、JS、Wasm、Wasm-GC 本地测试通过
 - [x] CLI、万级工作负载、CI、查重和路线图齐备
 - [x] 两页 PDF 与 DOCX 已生成
-- [ ] 填写参赛者姓名、电话、邮箱
-- [ ] 创建 GitLink 仓库并填写地址
+- [ ] 填写参赛者电话、邮箱
+- [x] GitLink 仓库：https://www.gitlink.org.cn/brother666/MoonWheelKit
 - [x] GitHub Actions 首次运行成功：run 28453414903
 - [ ] GitLink 手动同步并核对有效提交数

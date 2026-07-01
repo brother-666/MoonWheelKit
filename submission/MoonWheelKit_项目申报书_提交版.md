@@ -8,13 +8,13 @@
 
 - 项目名称：MoonWheelKit：面向 MoonBit 的分层时间轮与确定性虚拟时钟调度基础库
 
-- 参赛者：【提交前填写】
+- 参赛者：孙加豪
 
 - 联系方式：【提交前填写：手机、邮箱】
 
 - GitHub 仓库：https://github.com/brother-666/MoonWheelKit
 
-- GitLink 仓库：【创建后填写】
+- GitLink 仓库：https://www.gitlink.org.cn/brother666/MoonWheelKit
 
 - 项目方向：MoonBit 基础生态库 / 定时调度 / 确定性测试基础设施
 
