@@ -186,3 +186,19 @@ pub fn AdvanceReport::to_json(self : AdvanceReport) -> String {
   out.write_string("]}")
   out.to_string()
 }
+
+///|
+pub fn DrainReport::to_json(self : DrainReport) -> String {
+  let out = StringBuilder()
+  out.write_string(
+    "{\"from_tick\":\{self.from_tick},\"to_tick\":\{self.to_tick},\"budget\":\{self.budget},\"deferred_due\":\{self.deferred_due},\"exhausted\":\{self.exhausted},\"fired\":[",
+  )
+  for index, task in self.fired {
+    if index > 0 {
+      out.write_char(',')
+    }
+    out.write_string(task.to_json())
+  }
+  out.write_string("]}")
+  out.to_string()
+}

@@ -47,4 +47,19 @@ fn main {
   println("stats=" + scheduler.stats().to_json())
   println("snapshot=" + scheduler.snapshot().to_json())
   println("validation_issues=\{scheduler.validate().length()}")
+
+  let storm = @wheel.Wheel::new()
+  for index = 0; index < 7; index = index + 1 {
+    ignore(storm.schedule(@wheel.TimerSpec::once(3, "recovery-job-\{index}")))
+  }
+  match storm.advance_late_budgeted(20, 3) {
+    @wheel.DrainResult::Drained(report) =>
+      println("budgeted_drain=" + report.to_json())
+    @wheel.DrainResult::Rejected(_) => println("budgeted_drain=rejected")
+  }
+  match storm.advance_late_budgeted(20, 10) {
+    @wheel.DrainResult::Drained(report) =>
+      println("budgeted_resume=" + report.to_json())
+    @wheel.DrainResult::Rejected(_) => println("budgeted_resume=rejected")
+  }
 }
