@@ -41,9 +41,7 @@ pub fn Wheel::restore(snapshot : TimerSnapshot) -> Wheel? {
   wheel.scheduled_total = snapshot.scheduled_total
   wheel.cascades_total = snapshot.cascades_total
   for info in snapshot.timers {
-    if info.id <= 0 ||
-      (info.deadline < snapshot.now && info.state == TimerState::Pending) ||
-      (info.repeat != RepeatMode::Once && info.period <= 0) {
+    if info.id <= 0 || (info.repeat != RepeatMode::Once && info.period <= 0) {
       return None
     }
     let timer = InternalTimer::{

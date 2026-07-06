@@ -18,6 +18,12 @@ struct InternalTimer {
 }
 
 ///|
+priv struct CatchUpCount {
+  timer_id : Int
+  count : Int
+}
+
+///|
 pub struct Wheel {
   config : WheelConfig
   mut current_tick : Int
@@ -410,5 +416,136 @@ pub fn Wheel::advance_late_to(self : Wheel, target : Int) -> AdvanceResult {
     scanned_ticks: 0,
     cascades: 0,
     fired: output,
+  })
+}
+
+///|
+fn catch_up_count(counts : Array[CatchUpCount], timer_id : Int) -> Int {
+  for item in counts {
+    if item.timer_id == timer_id {
+      return item.count
+    }
+  }
+  0
+}
+
+///|
+fn increment_catch_up(counts : Array[CatchUpCount], timer_id : Int) -> Unit {
+  for index, item in counts {
+    if item.timer_id == timer_id {
+      counts[index] = { timer_id, count: item.count + 1 }
+      return
+    }
+  }
+  counts.push({ timer_id, count: 1 })
+}
+
+///|
+fn due_before(left : InternalTimer, right : InternalTimer) -> Bool {
+  if left.deadline != right.deadline {
+    left.deadline < right.deadline
+  } else {
+    left.id < right.id
+  }
+}
+
+///|
+fn Wheel::next_budgeted_due(
+  self : Wheel,
+  target : Int,
+  counts : Array[CatchUpCount],
+) -> InternalTimer? {
+  let mut selected : InternalTimer? = None
+  for _, timer in self.timers {
+    let eligible = timer.state == TimerState::Pending &&
+      timer.deadline <= target &&
+      (
+        timer.repeat != RepeatMode::FixedRate ||
+        catch_up_count(counts, timer.id) < self.config.max_catch_up
+      )
+    if eligible {
+      match selected {
+        Some(current) =>
+          if due_before(timer, current) {
+            selected = Some(timer)
+          }
+        None => selected = Some(timer)
+      }
+    }
+  }
+  selected
+}
+
+///|
+fn Wheel::skip_excess_fixed_rate(
+  self : Wheel,
+  target : Int,
+  counts : Array[CatchUpCount],
+) -> Unit {
+  for _, timer in self.timers {
+    if timer.state == TimerState::Pending &&
+      timer.repeat == RepeatMode::FixedRate &&
+      timer.deadline <= target &&
+      catch_up_count(counts, timer.id) >= self.config.max_catch_up {
+      let missed = (target - timer.deadline) / timer.period + 1
+      timer.deadline = timer.deadline + missed * timer.period
+      timer.generation = timer.generation + 1
+    }
+  }
+}
+
+///|
+fn Wheel::due_timer_count(self : Wheel, target : Int) -> Int {
+  let mut count = 0
+  for _, timer in self.timers {
+    if timer.state == TimerState::Pending && timer.deadline <= target {
+      count = count + 1
+    }
+  }
+  count
+}
+
+///|
+/// Jumps virtual time while bounding the total number of emitted tasks.
+///
+/// Due timers are selected globally by `(deadline, timer_id)`. When the budget
+/// is exhausted, remaining due timers stay pending and can be drained by
+/// calling this method again with the same target.
+pub fn Wheel::advance_late_budgeted(
+  self : Wheel,
+  target : Int,
+  max_fires : Int,
+) -> DrainResult {
+  if target < self.current_tick {
+    return DrainResult::Rejected(ScheduleError::TimeWentBackwards)
+  }
+  if max_fires < 1 {
+    return DrainResult::Rejected(ScheduleError::InvalidBudget)
+  }
+  let from_tick = self.current_tick
+  self.current_tick = target
+  let output : Array[FiredTask] = []
+  let counts : Array[CatchUpCount] = []
+  while output.length() < max_fires {
+    match self.next_budgeted_due(target, counts) {
+      Some(timer) => {
+        self.emit_timer(timer, output)
+        if timer.repeat == RepeatMode::FixedRate {
+          increment_catch_up(counts, timer.id)
+        }
+      }
+      None => break
+    }
+  }
+  self.skip_excess_fixed_rate(target, counts)
+  self.rebuild_live_buckets()
+  let deferred_due = self.due_timer_count(target)
+  DrainResult::Drained({
+    from_tick,
+    to_tick: target,
+    budget: max_fires,
+    fired: output,
+    deferred_due,
+    exhausted: deferred_due > 0,
   })
 }

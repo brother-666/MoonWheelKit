@@ -17,6 +17,7 @@ pub(all) enum ScheduleError {
   InvalidDelay
   InvalidPeriod
   InvalidConfiguration
+  InvalidBudget
   UnknownTimer
   TimeWentBackwards
   SnapshotMismatch
@@ -31,6 +32,12 @@ pub(all) enum TimerResult {
 ///|
 pub(all) enum AdvanceResult {
   Advanced(AdvanceReport)
+  Rejected(ScheduleError)
+} derive(Debug, Eq)
+
+///|
+pub(all) enum DrainResult {
+  Drained(DrainReport)
   Rejected(ScheduleError)
 } derive(Debug, Eq)
 
@@ -116,6 +123,16 @@ pub(all) struct AdvanceReport {
   scanned_ticks : Int
   cascades : Int
   fired : Array[FiredTask]
+} derive(Debug, Eq)
+
+///|
+pub(all) struct DrainReport {
+  from_tick : Int
+  to_tick : Int
+  budget : Int
+  fired : Array[FiredTask]
+  deferred_due : Int
+  exhausted : Bool
 } derive(Debug, Eq)
 
 ///|

@@ -1,0 +1,184 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "brother-666/moonwheelkit"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct AdvanceReport {
+  from_tick : Int
+  to_tick : Int
+  scanned_ticks : Int
+  cascades : Int
+  fired : Array[FiredTask]
+} derive(Eq, @debug.Debug)
+pub fn AdvanceReport::to_json(Self) -> String
+
+pub(all) enum AdvanceResult {
+  Advanced(AdvanceReport)
+  Rejected(ScheduleError)
+} derive(Eq, @debug.Debug)
+
+type BucketEntry
+
+pub(all) struct DrainReport {
+  from_tick : Int
+  to_tick : Int
+  budget : Int
+  fired : Array[FiredTask]
+  deferred_due : Int
+  exhausted : Bool
+} derive(Eq, @debug.Debug)
+pub fn DrainReport::to_json(Self) -> String
+
+pub(all) enum DrainResult {
+  Drained(DrainReport)
+  Rejected(ScheduleError)
+} derive(Eq, @debug.Debug)
+
+pub(all) struct FiredTask {
+  timer_id : Int
+  scheduled_at : Int
+  observed_at : Int
+  lateness : Int
+  occurrence : Int
+  payload : String
+} derive(Eq, @debug.Debug)
+pub fn FiredTask::to_json(Self) -> String
+
+type InternalTimer
+
+pub(all) struct MaintenanceReport {
+  removed_terminal_timers : Int
+  removed_stale_entries : Int
+  retained_pending_timers : Int
+} derive(Eq, @debug.Debug)
+
+pub(all) enum RepeatMode {
+  Once
+  FixedDelay
+  FixedRate
+} derive(Eq, @debug.Debug)
+
+pub(all) enum ScheduleError {
+  InvalidDelay
+  InvalidPeriod
+  InvalidConfiguration
+  InvalidBudget
+  UnknownTimer
+  TimeWentBackwards
+  SnapshotMismatch
+} derive(Eq, @debug.Debug)
+
+pub(all) struct TimerInfo {
+  id : Int
+  deadline : Int
+  period : Int
+  repeat : RepeatMode
+  payload : String
+  state : TimerState
+  sequence : Int
+  generation : Int
+  occurrence : Int
+} derive(Eq, @debug.Debug)
+pub fn TimerInfo::to_json(Self) -> String
+
+pub(all) enum TimerResult {
+  Accepted(Int)
+  Rejected(ScheduleError)
+} derive(Eq, @debug.Debug)
+
+pub(all) struct TimerSnapshot {
+  now : Int
+  next_id : Int
+  next_sequence : Int
+  fired_total : Int
+  scheduled_total : Int
+  cascades_total : Int
+  config : WheelConfig
+  timers : Array[TimerInfo]
+} derive(Eq, @debug.Debug)
+pub fn TimerSnapshot::to_json(Self) -> String
+
+pub(all) struct TimerSpec {
+  delay : Int
+  period : Int
+  repeat : RepeatMode
+  payload : String
+} derive(Eq, @debug.Debug)
+pub fn TimerSpec::fixed_delay(Int, Int, String) -> Self
+pub fn TimerSpec::fixed_rate(Int, Int, String) -> Self
+pub fn TimerSpec::once(Int, String) -> Self
+
+pub(all) enum TimerState {
+  Pending
+  Cancelled
+  Fired
+} derive(Eq, @debug.Debug)
+
+pub(all) struct ValidationIssue {
+  code : String
+  timer_id : Int
+  message : String
+} derive(Eq, @debug.Debug)
+
+pub struct Wheel {
+  config : WheelConfig
+  mut current_tick : Int
+  mut next_id : Int
+  mut next_sequence : Int
+  timers : Map[Int, InternalTimer]
+  buckets : Array[Array[BucketEntry]]
+  mut fired_total : Int
+  mut scheduled_total : Int
+  mut cascades_total : Int
+}
+pub fn Wheel::advance_by(Self, Int) -> AdvanceResult
+pub fn Wheel::advance_late_budgeted(Self, Int, Int) -> DrainResult
+pub fn Wheel::advance_late_to(Self, Int) -> AdvanceResult
+pub fn Wheel::advance_to(Self, Int) -> AdvanceResult
+pub fn Wheel::cancel(Self, Int) -> Bool
+pub fn Wheel::compact(Self) -> MaintenanceReport
+pub fn Wheel::config(Self) -> WheelConfig
+pub fn Wheel::get(Self, Int) -> TimerInfo?
+pub fn Wheel::new(config? : WheelConfig) -> Self
+pub fn Wheel::now(Self) -> Int
+pub fn Wheel::pending(Self) -> Int
+pub fn Wheel::reschedule(Self, Int, Int) -> TimerResult
+pub fn Wheel::restore(TimerSnapshot) -> Self?
+pub fn Wheel::schedule(Self, TimerSpec) -> TimerResult
+pub fn Wheel::snapshot(Self) -> TimerSnapshot
+pub fn Wheel::stats(Self) -> WheelStats
+pub fn Wheel::timers(Self) -> Array[TimerInfo]
+pub fn Wheel::validate(Self) -> Array[ValidationIssue]
+
+pub(all) struct WheelConfig {
+  tick_ms : Int
+  slots_per_level : Int
+  levels : Int
+  max_catch_up : Int
+} derive(Eq, @debug.Debug)
+pub fn WheelConfig::is_valid(Self) -> Bool
+pub fn WheelConfig::standard() -> Self
+
+pub(all) struct WheelStats {
+  now : Int
+  pending : Int
+  cancelled : Int
+  fired_total : Int
+  scheduled_total : Int
+  cascades_total : Int
+  levels : Int
+  slots_per_level : Int
+} derive(Eq, @debug.Debug)
+pub fn WheelStats::to_json(Self) -> String
+
+// Type aliases
+
+// Traits
+
