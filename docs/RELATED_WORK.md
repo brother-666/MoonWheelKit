@@ -1,38 +1,13 @@
-# Related work and project boundary
+# 生态差异与边界
 
-Search date: 2026-06-30.
+异步运行时和系统定时器负责唤醒任务；MoonWheelKit 负责组织大量逻辑截止时间，
+两者是上下层关系。应用可以从外部时钟读取时间，再显式推进时间轮。
 
-## MoonBit ecosystem review
+优先队列可管理截止时间，但通常没有分层桶、固定延迟/固定频率迟到语义、快照
+恢复和 backlog 排空报告。MoonWheelKit 将这些调度政策组合为后端中立内核。
 
-The following packages were reviewed before defining the scope:
+项目不是 cron 解析器、线程池、持久化数据库或分布式调度器。它不执行 payload，
+只返回确定性的 `FiredTask`，由调用方决定执行、重试和持久化。
 
-- [`moonbitlang/async`](https://mooncakes.io/docs/moonbitlang/async) provides an
-  asynchronous runtime, event-loop timers, `sleep`, timeout and retry behavior.
-  It intentionally exposes real runtime time. MoonWheelKit instead provides a
-  reusable data structure with explicit virtual time, hierarchy inspection,
-  deterministic snapshots and bounded late catch-up.
-- [`peter-jerry-ye/async`](https://mooncakes.io/docs/peter-jerry-ye/async)
-  provides promises, an event loop, channels and I/O. MoonWheelKit is not
-  another async runtime and has no promise or I/O layer.
-- [`f4ah6o/mhx`](https://mooncakes.io/docs/f4ah6o/mhx) includes UI-oriented
-  delay, throttle and debounce behavior. MoonWheelKit targets backend-neutral
-  scheduling infrastructure rather than browser interaction policy.
-- [`dowdiness/moondsp`](https://mooncakes.io/docs/dowdiness/moondsp) includes
-  domain-specific audio scheduling. MoonWheelKit has no audio model and exposes
-  generic timer payloads and restoration semantics.
-
-Searches for `timing wheel`, `hierarchical timer`, `virtual time scheduler`,
-`cron` and `delayed task` did not identify a published Mooncakes package whose
-documented purpose matches this library's combination of hierarchical buckets,
-generation-based invalidation, deterministic virtual time and snapshot replay.
-This is a dated review, not a claim that future packages cannot overlap.
-
-## Deliberate non-goals
-
-- no replacement for `moonbitlang/async`
-- no operating-system clock or thread management
-- no cron expression parser
-- no distributed consensus or durable storage format
-- no promise/future abstraction
-
-Integrations can build these concerns around the deterministic core.
+截至 2026-07-06，检索 Mooncakes 的 timing wheel、virtual time、scheduler、
+timer backlog 和 catch-up 相关项目，未发现覆盖上述完整范围的 MoonBit 通用库。

@@ -1,51 +1,19 @@
-# Benchmark plan
+# 基准方案
 
-Performance claims must be reproducible and dated. The repository therefore
-ships a workload generator instead of embedding an unverified speed ratio in
-the README.
+## 分散截止工作负载
 
-## Baseline workload
+10,000 个一次性定时器分布在 4,096 tick 内，验证分层级联、全部触发和内部
+一致性。
 
-Run:
+## 同时到期风暴
 
-```text
-moon run bench/main
-```
+10,000 个任务在同一 tick 到期，虚拟时间直接跳到 1,000，每次最多发射 256：
 
-The workload schedules 10,000 one-shot timers using a deterministic spread
-over 4,096 ticks, advances the wheel to the horizon, and checks that every
-timer fired and no invariant was violated.
+- 预期批次数为 40；
+- 任一批次不得超过预算；
+- 最终触发数必须为 10,000；
+- 最终 deferred 必须为 0；
+- 内部校验问题必须为 0。
 
-## Measurement matrix
-
-For each release, record:
-
-- MoonBit compiler version and commit
-- operating system and CPU model
-- target backend: native, JavaScript, Wasm and Wasm-GC
-- release/debug mode
-- wheel geometry
-- timer count and deadline distribution
-- schedule, advance, cancellation and snapshot wall time
-- peak resident memory where the host provides it
-
-## Comparative baselines
-
-The intended baseline is a sorted-array scheduler with identical semantics,
-not a platform event loop with different clock and cancellation behavior.
-Future benchmark work should compare:
-
-1. insertion into a deadline-sorted array;
-2. binary heap plus identifier table;
-3. MoonWheelKit with several slot/level geometries.
-
-Uniform, clustered and long-tail deadline distributions should be reported
-separately. Results belong in dated files under `docs/performance/`; historical
-results must not be overwritten.
-
-## Acceptance checks
-
-- all scheduled one-shot timers fire exactly once;
-- fixed-rate catch-up never exceeds `max_catch_up`;
-- validation returns no issue after each workload;
-- repeated runs with the same input produce identical event order.
+这些指标验证工作量边界，不宣称未经统一硬件测试的吞吐率。正式性能报告应记录
+MoonBit 版本、目标后端、优化级别、硬件和完整命令。

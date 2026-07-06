@@ -1,35 +1,15 @@
-# Implementation evidence
+# 验证证据
 
-## Implemented
+当前 27 项确定性测试覆盖：
 
-- configurable multi-level timing wheel
-- generation-based cancellation and rescheduling
-- exact and late virtual-time advancement
-- one-shot, fixed-delay and fixed-rate timers
-- bounded fixed-rate catch-up
-- deterministic deadline ordering
-- logical snapshot and restoration
-- statistics, invariant validation, JSON reporting and compaction
-- CLI scenario and deterministic 10,000-timer workload
+- 精确截止、零延迟与相同截止稳定顺序；
+- 取消、重排和 generation 失效；
+- 多层级联、固定延迟与固定频率；
+- 迟到报告和固定频率追赶上限；
+- 全局预算、分批续排与 deadline/id 顺序；
+- 重复任务与一次性任务交错；
+- 非法预算、时间倒退和快照 backlog 恢复；
+- 统计、校验、压缩和快照。
 
-## Verification commands
-
-```text
-moon check
-moon test
-moon test --target js
-moon test --target wasm
-moon test --target wasm-gc
-moon run cmd/main
-moon run bench/main
-```
-
-At the time this document was added, the suite contained 21 deterministic
-tests. CI repeats the backend matrix on every push and pull request.
-
-## Traceability
-
-Public changes should be organized as feature-sized commits. Issues describe
-behavior or evidence gaps, pull requests link implementation to those issues,
-and `CHANGELOG.md` records release-facing changes. `docs/TRACKING.md` provides
-ready-to-use issue titles for the next milestones.
+万级风暴工作负载创建 10,000 个同时到期任务，以每批 256 的预算完成 40 批
+排空，最终触发 10,000、deferred=0、校验问题=0。

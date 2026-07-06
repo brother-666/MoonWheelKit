@@ -7,6 +7,10 @@ The core library does not read the system clock. Applications explicitly
 advance virtual time, which makes timer-heavy services, simulations and tests
 repeatable across native, JavaScript, WebAssembly and Wasm-GC backends.
 
+For recovery storms, `advance_late_budgeted(target, max_fires)` bounds total
+emissions across all due timers. Remaining due work stays pending and can be
+drained by calling the method again at the same target tick.
+
 ```moonbit nocheck
 ///|
 test "schedule with deterministic virtual time" {
@@ -20,6 +24,18 @@ test "schedule with deterministic virtual time" {
     @moonwheelkit.AdvanceResult::Rejected(_) =>
       fail("forward advance should succeed")
   }
+}
+```
+
+```moonbit nocheck
+match wheel.advance_late_budgeted(1000, 256) {
+  @moonwheelkit.DrainResult::Drained(report) => {
+    println(report.to_json())
+    if report.exhausted {
+      // Continue draining at tick 1000 in a later event-loop turn.
+    }
+  }
+  @moonwheelkit.DrainResult::Rejected(_) => ()
 }
 ```
 

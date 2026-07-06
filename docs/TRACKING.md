@@ -1,45 +1,10 @@
-# Public development tracking
+# 公开开发记录
 
-The following issues can be created in the public repository. Each issue should
-link its pull request and close only after tests and documentation are updated.
+每项重要能力应包含实现、失败路径测试、文档、CLI 或固定工作负载，以及多后端
+CI。当前优先事项：
 
-## Suggested issues
-
-1. `feat: add clock adapter trait without platform dependencies`
-   - define adapter boundary and monotonicity rules
-   - provide a manual clock reference adapter
-   - test backward and duplicate clock observations
-
-2. `test: add model-based randomized scheduler comparison`
-   - build a simple sorted-array oracle
-   - generate deterministic operation traces
-   - compare event order, cancellation and snapshots
-
-3. `perf: publish dated four-backend benchmark snapshot`
-   - record compiler, CPU, OS and build mode
-   - measure uniform, clustered and long-tail workloads
-   - preserve raw commands and output
-
-4. `feat: add versioned snapshot parser`
-   - define schema version and compatibility rules
-   - reject malformed and unsupported snapshots
-   - add round-trip and migration fixtures
-
-5. `docs: add async runtime integration example`
-   - keep the core dependency-free
-   - show how an external event loop advances the wheel
-   - document cancellation ownership
-
-## Pull request checklist
-
-- issue linked and behavior stated
-- public API change documented
-- default, JS, Wasm and Wasm-GC tests pass
-- deterministic ordering preserved
-- benchmark claim includes reproducible evidence
-- changelog updated when user-visible behavior changes
-
-## Release evidence
-
-For each release, attach the CI run URL, commit hash, test count, benchmark
-snapshot path and MoonBit compiler version to the release notes.
+1. 为预算化排空增加到期堆优化；
+2. 增加随机模型与参考调度器对照；
+3. 提供版本化快照解析器；
+4. 增加分组取消和 typed payload 适配；
+5. 发布统一硬件上的四后端性能报告。

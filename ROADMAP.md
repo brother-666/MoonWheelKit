@@ -3,6 +3,8 @@
 ## 0.2 - Integration layer
 
 - clock adapter trait for embedding real or simulated clocks
+- [x] global budgeted late advancement
+- [x] resumable backlog snapshot semantics
 - batch scheduling and cancellation APIs
 - optional typed payload wrapper
 - snapshot parser with versioned schema
