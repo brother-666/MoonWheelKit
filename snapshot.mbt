@@ -14,7 +14,7 @@ pub fn Wheel::snapshot(self : Wheel) -> TimerSnapshot {
 
 ///|
 fn snapshot_has_duplicate_ids(snapshot : TimerSnapshot) -> Bool {
-  let seen : Map[Int, Bool] = {}
+  let seen : Map[Int, Bool] = Map([])
   for timer in snapshot.timers {
     if seen.contains(timer.id) {
       return true

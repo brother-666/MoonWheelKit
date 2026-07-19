@@ -3,6 +3,14 @@
 MoonWheelKit is a backend-neutral hierarchical timing wheel and deterministic
 virtual-time scheduler for MoonBit.
 
+## Install
+
+```bash
+moon add brother-666/moonwheelkit
+```
+
+Import the package as `import "brother-666/moonwheelkit" @wheel`.
+
 The core library does not read the system clock. Applications explicitly
 advance virtual time, which makes timer-heavy services, simulations and tests
 repeatable across native, JavaScript, WebAssembly and Wasm-GC backends.

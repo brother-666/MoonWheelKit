@@ -1,4 +1,4 @@
-name: MoonWheelKit CI
+name: MoonWheelKit Quality Gates
 
 on:
   push:
@@ -18,16 +18,30 @@ jobs:
         target: [native, js, wasm, wasm-gc]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Setup MoonBit
-        uses: hustcer/setup-moonbit@v1
+      - name: Install MoonBit
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Toolchain
+        run: moon version --all
 
       - name: Format check
-        run: moon fmt --check
+        shell: pwsh
+        run: |
+          $help = moon fmt --help | Out-String
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($help -match '--deny-warn') { moon fmt --deny-warn } else { moon fmt --check }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Compile
         run: moon check --target ${{ matrix.target }}
+
+      - name: Build
+        run: moon build --target ${{ matrix.target }}
 
       - name: Test
         run: moon test --target ${{ matrix.target }}
@@ -42,6 +56,9 @@ jobs:
 
       - name: Verify generated public API
         if: matrix.target == 'native'
+        shell: pwsh
         run: |
-          moon info
-          git diff --exit-code -- '*.mbti'
+          $help = moon info --help | Out-String
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if ($help -match '--deny-warn') { moon info --deny-warn } else { moon info; git diff --exit-code -- '*.mbti' }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

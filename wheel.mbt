@@ -99,7 +99,7 @@ pub fn Wheel::new(config? : WheelConfig = WheelConfig::standard()) -> Wheel {
     current_tick: 0,
     next_id: 1,
     next_sequence: 1,
-    timers: {},
+    timers: Map([]),
     buckets,
     fired_total: 0,
     scheduled_total: 0,

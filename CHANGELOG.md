@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 - 2026-07-20
+
+- Update executable package metadata for the current MoonBit toolchain.
+- Remove ambiguous empty-map warnings from scheduler creation and snapshot
+  validation.
+- Add reproducible installation instructions and strict CI quality gates.
+
 ## 0.2.1
 
 - 修复公开中文文档乱码。
